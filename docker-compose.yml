@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  lazbot:
+    build: .
+    container_name: lazbot
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - BOT_PREFIX=.
+      - BOT_NAME=LazBot
+      - OWNER_NUMBER=${OWNER_NUMBER:-62xxxxxxxxxxxx}
+      - SESSION_PATH=/app/.sessions
+      - CHROME_PATH=/usr/bin/chromium-browser
+    volumes:
+      - ./sessions:/app/.sessions
+      - ./logs:/app/logs
+      - ./temp:/app/temp
+    ports:
+      - "3000:3000"
+    networks:
+      - lazbot-network
+    mem_limit: 1g
+    mem_reservation: 512m
+    cpus: '0.5'
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Health check')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Optional: Redis for session storage (future enhancement)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: lazbot-redis
+  #   restart: unless-stopped
+  #   volumes:
+  #     - redis-data:/data
+  #   networks:
+  #     - lazbot-network
+  #   mem_limit: 256m
+  #   command: redis-server --appendonly yes
+
+networks:
+  lazbot-network:
+    driver: bridge
+
+volumes:
+  sessions:
+    driver: local
+  logs:
+    driver: local
+  temp:
+    driver: local
+  # redis-data:
+  #   driver: local
