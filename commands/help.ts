@@ -1,4 +1,4 @@
-import { CommandHandler, CommandContext } from '../types';
+import { CommandHandler, CommandContext } from '../types/index';
 
 const helpCommand: CommandHandler = {
   name: 'help',
@@ -75,9 +75,7 @@ ${cmd.name === 'smeme' ? `
 
       // General help message
       const helpText = `
-🤖 *LAZBOT - WhatsApp Sticker Bot*
-
-📋 *Daftar Perintah:*
+📋 *Daftar Command:*
 
 🎨 *.s* - Membuat sticker
 • Reply gambar/video/GIF dengan ".s"
@@ -90,21 +88,6 @@ ${cmd.name === 'smeme' ? `
 ❓ *.help* - Bantuan
 • .help - Tampilkan semua command
 • .help [nama_command] - Detail command
-
-┌─────────────────────────┐
-│  🔧 *Cara Penggunaan:*   │
-└─────────────────────────┘
-1️⃣ Kirim/Reply media
-2️⃣ Ketik command yang diinginkan
-3️⃣ Tunggu bot memproses
-4️⃣ Sticker siap digunakan!
-
-💡 *Tips:* 
-• Gunakan gambar/video berkualitas baik
-• GIF akan dikonversi menjadi sticker animasi
-• Ukuran file maksimal yang direkomendasikan: 5MB
-
-📞 *Support:* LazBot v1.0.0
       `.trim();
 
       await message.reply(helpText);

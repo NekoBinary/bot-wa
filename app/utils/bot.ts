@@ -13,13 +13,19 @@ export class CommandManager {
   }
 
   async loadCommands(): Promise<void> {
-    const commandsDir = path.join(process.cwd(), 'commands');
+    // Check if we're running from dist directory (production) or source (development)
+    const isProduction = __filename.includes('dist');
+    const commandsDir = isProduction 
+      ? path.join(process.cwd(), 'dist', 'commands')
+      : path.join(process.cwd(), 'commands');
     
     try {
       const files = await fs.readdir(commandsDir);
-      const tsFiles = files.filter(file => file.endsWith('.ts') || file.endsWith('.js'));
+      const commandFiles = isProduction 
+        ? files.filter(file => file.endsWith('.js'))
+        : files.filter(file => file.endsWith('.ts') || file.endsWith('.js'));
 
-      for (const file of tsFiles) {
+      for (const file of commandFiles) {
         try {
           const commandPath = path.join(commandsDir, file);
           const commandModule = await import(commandPath);

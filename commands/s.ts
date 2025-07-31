@@ -1,4 +1,4 @@
-import { CommandHandler, CommandContext } from '../types';
+import { CommandHandler, CommandContext } from '../types/index';
 import { StickerUtils } from '../app/utils/sticker';
 import { MessageMedia } from 'whatsapp-web.js';
 
