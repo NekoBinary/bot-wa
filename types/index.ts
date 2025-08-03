@@ -34,7 +34,7 @@ export interface BotConfig {
   sessionPath: string;
 }
 
-export interface MediaInfo {
+export interface MediaFileInfo {
   mimetype: string;
   data: Buffer;
   filename?: string;
@@ -47,4 +47,28 @@ export enum MessageTypes {
   STICKER = 'sticker',
   DOCUMENT = 'document',
   AUDIO = 'audio'
+}
+
+export interface DownloadOptions {
+  quality?: 'high' | 'medium' | 'low';
+  format?: 'mp4' | 'mp3' | 'webm';
+  maxSize?: number; // in MB
+}
+
+export interface DownloadResult {
+  success: boolean;
+  buffer?: Buffer;
+  filename?: string;
+  title?: string;
+  duration?: string;
+  size?: number;
+  error?: string;
+}
+
+export interface MediaInfo {
+  title: string;
+  duration: string;
+  thumbnail: string;
+  url: string;
+  platform: 'youtube' | 'instagram' | 'tiktok' | 'facebook';
 }
