@@ -93,7 +93,6 @@ export class WhatsAppBot {
           '--disable-backgrounding-occluded-windows',
           '--disable-renderer-backgrounding'
         ],
-        executablePath: process.env.CHROME_PATH || undefined
       }
     });
 
