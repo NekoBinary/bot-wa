@@ -127,16 +127,27 @@ export class WhatsAppBot {
       // Ignore status messages and own messages
       if (message.from === 'status@broadcast' || message.fromMe) return;
 
+      console.log(`📩 Pesan diterima dari ${message.from}: ${message.body}`);
+
       // Check if message starts with prefix
-      if (!message.body.startsWith(this.config.prefix)) return;
+      if (!message.body.startsWith(this.config.prefix)) {
+        console.log(`⚠️ Pesan dari ${message.from} tidak menggunakan prefix ${this.config.prefix}`);
+        return;
+      }
 
       const args = message.body.slice(this.config.prefix.length).trim().split(/\s+/);
       const commandName = args.shift()?.toLowerCase();
 
-      if (!commandName) return;
+      if (!commandName) {
+        console.log(`⚠️ Tidak menemukan nama command pada pesan dari ${message.from}`);
+        return;
+      }
 
       const command = this.commandManager.getCommand(commandName);
-      if (!command) return;
+      if (!command) {
+        console.log(`⚠️ Command ${commandName} tidak ditemukan untuk pesan dari ${message.from}`);
+        return;
+      }
 
       try {
         await command.execute({
@@ -145,6 +156,8 @@ export class WhatsAppBot {
           args,
           command: commandName
         });
+
+        console.log(`✅ Berhasil merespon ${message.from} dengan command ${commandName}`);
       } catch (error) {
         console.error(`❌ Error executing command ${commandName}:`, error);
         await message.reply('❌ Terjadi kesalahan saat menjalankan command.');
