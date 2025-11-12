@@ -8,7 +8,12 @@ export default class DownloadService {
   constructor({ tempDir, maxSizeMb = 50 }) {
     this.tempDir = tempDir;
     this.maxSizeMb = maxSizeMb;
-    this.wrapper = new YTDlpWrap();
+    this.binaryPath = path.join(
+      this.tempDir,
+      process.platform === 'win32' ? 'yt-dlp.exe' : 'yt-dlp'
+    );
+    this.binaryReady = this.prepareBinary();
+    this.wrapper = new YTDlpWrap(this.binaryPath);
   }
 
   static isValidUrl(candidate) {
@@ -24,6 +29,45 @@ export default class DownloadService {
     await fs.ensureDir(this.tempDir);
   }
 
+  async prepareBinary() {
+    await this.ensureTempDir();
+    const exists = await fs.pathExists(this.binaryPath);
+
+    if (exists) {
+      try {
+        await this.wrapper.getVersion();
+        return;
+      } catch (error) {
+        console.warn('Existing binary is corrupted, re-downloading...', error);
+        await fs.remove(this.binaryPath).catch(() => {});
+      }
+    }
+
+    try {
+      const platform = process.platform;
+
+      await YTDlpWrap.downloadFromGithub(this.binaryPath, undefined, platform);
+
+      if (platform !== 'win32') {
+        await fs.chmod(this.binaryPath, 0o755).catch(() => {});
+      }
+
+      await this.wrapper.getVersion();
+    } catch (error) {
+      console.error('YtDlp binary setup error:', error);
+      throw new Error('Downloader tidak siap. Pastikan server memiliki akses internet.');
+    }
+  }
+
+  async ensureBinaryReady() {
+    try {
+      await this.binaryReady;
+    } catch {
+      this.binaryReady = this.prepareBinary();
+      await this.binaryReady;
+    }
+  }
+
   async download(url, options = {}) {
     const {
       format = 'video',
@@ -32,6 +76,7 @@ export default class DownloadService {
     } = options;
 
     try {
+      await this.ensureBinaryReady();
       await this.ensureTempDir();
       const info = await this.getInfo(url);
 
@@ -112,6 +157,7 @@ export default class DownloadService {
 
   async getInfo(url) {
     try {
+      await this.ensureBinaryReady();
       const info = await this.wrapper.getVideoInfo(url);
       return {
         success: true,
@@ -123,7 +169,9 @@ export default class DownloadService {
       console.error('YtDlp info error:', error);
       return {
         success: false,
-        error: 'Tidak dapat mengambil informasi video.'
+        error: error?.message?.includes('Downloader tidak siap')
+          ? 'Downloader tidak siap. Pastikan server memiliki akses internet.'
+          : 'Tidak dapat mengambil informasi video.'
       };
     }
   }
@@ -157,6 +205,10 @@ export default class DownloadService {
 
     if (message.includes('Unable to extract')) {
       return 'Tidak dapat mengekstrak video. Link mungkin tidak valid atau expired.';
+    }
+
+    if (message.includes('Downloader tidak siap')) {
+      return 'Downloader tidak siap. Pastikan server memiliki akses internet.';
     }
 
     return 'Gagal mendownload media.';

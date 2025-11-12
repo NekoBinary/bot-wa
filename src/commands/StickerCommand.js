@@ -19,16 +19,16 @@ export default class StickerCommand extends Command {
     try {
       const media = await this.resolveMedia(message);
       if (!media) {
-        await message.reply('❌ Kirim atau reply gambar/video/GIF untuk membuat sticker!');
+        await message.reply('*Kirim atau reply gambar/video/GIF untuk membuat sticker!*');
         return;
       }
 
       if (!stickerService.isSupportedMedia(media.mimetype)) {
-        await message.reply('❌ Format file tidak didukung! Gunakan gambar, video, atau GIF.');
+        await message.reply('*Format file tidak didukung!* Gunakan gambar, video, atau GIF.');
         return;
       }
 
-      await message.reply('⏳ Sedang membuat sticker...');
+      await message.reply('*Sedang membuat sticker...*');
 
       const buffer = Buffer.from(media.data, 'base64');
       let stickerBuffer;
@@ -43,7 +43,7 @@ export default class StickerCommand extends Command {
       await client.sendMessage(message.from, stickerMedia, { sendMediaAsSticker: true });
     } catch (error) {
       console.error('Error in sticker command:', error);
-      await message.reply('❌ Gagal membuat sticker. Pastikan file yang dikirim valid.');
+      await message.reply('*Gagal membuat sticker. Pastikan file yang dikirim valid.*');
     }
   }
 

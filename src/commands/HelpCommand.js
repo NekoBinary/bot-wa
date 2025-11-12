@@ -13,28 +13,28 @@ export default class HelpCommand extends Command {
   async run({ message, args, registry }) {
     try {
       if (!registry) {
-        await message.reply('❌ Command registry belum siap. Coba lagi dalam beberapa detik.');
+        await message.reply('*Command registry belum siap. Coba lagi dalam beberapa detik.*');
         return;
       }
 
       if (args.length > 0) {
         const target = registry.get(args[0]);
         if (!target) {
-          await message.reply(`❌ Command "${args[0]}" tidak ditemukan!`);
+          await message.reply(`*Command "${args[0]}" tidak ditemukan!*`);
           return;
         }
 
         await message.reply(
-          `📌 *${target.name.toUpperCase()}*\n\n` +
-          `📝 Deskripsi:\n${target.description}\n\n` +
-          `💡 Penggunaan:\n${target.usage}`
+          `*${target.name.toUpperCase()}*\n\n` +
+          `*Deskripsi:*\n${target.description}\n\n` +
+          `*Penggunaan:*\n${target.usage}`
         );
         return;
       }
 
       const commands = registry.list();
       if (commands.length === 0) {
-        await message.reply('❌ Tidak ada command yang tersedia!');
+        await message.reply('*Tidak ada command yang tersedia!*');
         return;
       }
 
@@ -46,20 +46,21 @@ export default class HelpCommand extends Command {
         return acc;
       }, {});
 
-      let text = `🤖 *${process.env.BOT_NAME || 'LazBot'} - Daftar Command*\n`;
+      let text = `*${process.env.BOT_NAME || 'LazBot'} - Daftar Command*\n`;
 
       Object.entries(grouped).forEach(([category, cmdList]) => {
-        text += `\n📂 *${category}*\n`;
+        text += `\n*${category}*\n`;
         cmdList.forEach((cmd) => {
           text += `  • .${cmd.name} - ${cmd.description}\n`;
         });
       });
 
-      text += `\n💬 Ketik .help <command> untuk info detail`;
+      text += `\n*Ketik .help <command> untuk info detail*`;
+      text += `\n*Fitur download mendukung banyak platform (YouTube, TikTok, Instagram, Facebook, Twitter, dll).*`;
       await message.reply(text);
     } catch (error) {
       console.error('Error in help command:', error);
-      await message.reply('❌ Gagal menampilkan daftar command.');
+      await message.reply('*Gagal menampilkan daftar command.*');
     }
   }
 }

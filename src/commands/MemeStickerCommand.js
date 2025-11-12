@@ -19,7 +19,7 @@ export default class MemeStickerCommand extends Command {
     try {
       const text = args.join(' ');
       if (!text) {
-        await message.reply(`❌ Format salah!\n\n📝 Penggunaan:\n${this.usage}`);
+        await message.reply(`*Format salah!*\n\n*Penggunaan:*\n${this.usage}`);
         return;
       }
 
@@ -28,22 +28,22 @@ export default class MemeStickerCommand extends Command {
       const bottomText = rawBottom?.trim() || '';
 
       if (!topText && !bottomText) {
-        await message.reply('❌ Minimal masukkan satu teks (atas atau bawah)!');
+        await message.reply('*Minimal masukkan satu teks (atas atau bawah)!*');
         return;
       }
 
       const media = await this.resolveMedia(message);
       if (!media) {
-        await message.reply('❌ Kirim atau reply gambar untuk membuat sticker meme!');
+        await message.reply('*Kirim atau reply gambar untuk membuat sticker meme!*');
         return;
       }
 
       if (!stickerService.isImage(media.mimetype)) {
-        await message.reply('❌ Untuk meme sticker, gunakan gambar saja!');
+        await message.reply('*Untuk meme sticker, gunakan gambar saja!*');
         return;
       }
 
-      await message.reply('⏳ Sedang membuat sticker meme...');
+      await message.reply('*Sedang membuat sticker meme...*');
 
       const buffer = Buffer.from(media.data, 'base64');
       const stickerBuffer = await stickerService.createMemeSticker(buffer, {
@@ -58,7 +58,7 @@ export default class MemeStickerCommand extends Command {
       await client.sendMessage(message.from, stickerMedia, { sendMediaAsSticker: true });
     } catch (error) {
       console.error('Error in meme sticker command:', error);
-      await message.reply('❌ Gagal membuat sticker meme. Pastikan gambar yang dikirim valid.');
+      await message.reply('*Gagal membuat sticker meme. Pastikan gambar yang dikirim valid.*');
     }
   }
 

@@ -116,6 +116,7 @@ export default class BotApp {
 
       if (!command) {
         console.warn(`⚠️ Command ${commandName} tetap tidak ditemukan.`);
+        await message.reply('*Command tidak dikenali. Ketik .help untuk daftar command.*');
         return;
       }
 
@@ -130,7 +131,7 @@ export default class BotApp {
         });
       } catch (error) {
         console.error(`❌ Error executing command ${commandName}:`, error);
-        await message.reply('❌ Terjadi kesalahan saat menjalankan command.');
+        await message.reply('*Terjadi kesalahan saat menjalankan command.*');
       }
     });
   }
