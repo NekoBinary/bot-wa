@@ -18,6 +18,7 @@ Bot WhatsApp yang dapat membuat sticker dari gambar, video, dan GIF dengan fitur
 - pnpm
 - ffmpeg (untuk GIF/video processing)
 - webpmux (opsional, untuk metadata sticker)
+- Google Chrome atau Chromium (WhatsApp Web menolak Chromium bawaan Puppeteer; set `PUPPETEER_EXECUTABLE_PATH` ke binary Chrome/Chromium Anda)
 
 ### Installation
 
@@ -29,10 +30,7 @@ cd lazbot
 # Install dependencies
 pnpm install
 
-# Build project
-pnpm run build
-
-# Start bot
+# Start bot (production)
 pnpm start
 ```
 
@@ -55,65 +53,65 @@ pnpm run dev
 
 ```
 lazbot/
-├── app/
-│   ├── index.ts          # Entry point aplikasi
-│   └── utils/
-│       ├── bot.ts        # Bot logic & command manager
-│       └── sticker.ts    # Sticker processing utilities
-├── commands/
-│   ├── s.ts             # Sticker command
-│   ├── smeme.ts         # Meme sticker command
-│   └── help.ts          # Help command
-├── types/
-│   └── index.ts         # TypeScript type definitions
+├── src/
+│   ├── commands/          # Semua command berformat class turunan Command
+│   │   ├── DownloadCommand.js
+│   │   ├── HelpCommand.js
+│   │   ├── MemeStickerCommand.js
+│   │   └── StickerCommand.js
+│   ├── core/
+│   │   ├── BotApp.js      # Orkestrator WhatsApp bot
+│   │   ├── Command.js     # Base class (SOLID-friendly)
+│   │   ├── CommandLoader.js
+│   │   ├── CommandRegistry.js
+│   │   └── BrowserManager.js
+│   ├── services/
+│   │   ├── DownloadService.js
+│   │   └── StickerService.js
+│   ├── utils/
+│   │   └── whatsapp.js
+│   ├── config/
+│   │   └── index.js
+│   └── main.js            # Entry point
+├── ecosystem.config.js
 ├── package.json
-├── tsconfig.json
+├── pnpm-lock.yaml
 └── README.md
 ```
 
 ## 🎯 Command Registration
 
-Commands secara otomatis terdaftar berdasarkan nama file di folder `commands/`. 
+Semua command otomatis ter-load dari `src/commands`. Untuk menambah fitur baru:
 
-Untuk membuat command baru:
+1. Buat file `NamaCommand.js` di `src/commands/`.
+2. `import Command from '../core/Command.js';` lalu `export default class MyCommand extends Command { ... }`.
+3. Implementasikan method `run(context)` dan gunakan data dari `context` (`client`, `message`, `args`, `registry`, `config`).
 
-1. Buat file baru di `commands/namacommand.ts`
-2. Export default CommandHandler object
-3. Bot akan otomatis load command saat startup
+Contoh minimal:
 
-### Contoh Command Structure
+```js
+import Command from '../core/Command.js';
 
-```typescript
-import { CommandHandler, CommandContext } from '../types';
-
-const myCommand: CommandHandler = {
-  name: 'mycommand',
-  description: 'Deskripsi command',
-  usage: '.mycommand [parameter]',
-  
-  async execute(context: CommandContext): Promise<void> {
-    const { message, args, client } = context;
-    
-    // Command logic here
-    await message.reply('Hello from my command!');
+export default class PingCommand extends Command {
+  constructor() {
+    super({ name: 'ping', description: 'Tes respon', usage: '.ping' });
   }
-};
 
-export default myCommand;
+  async run({ message }) {
+    await message.reply('pong!');
+  }
+}
 ```
 
 ## ⚙️ Configuration
 
-Edit `app/index.ts` untuk mengubah konfigurasi bot:
+Semua konfigurasi ada di `.env` dan dibaca oleh `src/config/index.js`. Variabel penting:
 
-```typescript
-const config: BotConfig = {
-  prefix: '.',                    // Command prefix
-  ownerNumber: '62xxxxxxxxxxxx',  // Owner WhatsApp number
-  botName: 'LazBot',             // Bot name
-  sessionPath: './sessions'       // WhatsApp session storage
-};
-```
+- `BOT_PREFIX` – prefix command (default `.`)
+- `OWNER_NUMBER` – nomor owner
+- `SESSION_PATH` – lokasi penyimpanan session WhatsApp
+- `PUPPETEER_EXECUTABLE_PATH` / `CHROME_PATH` – path Chrome/Chromium
+- `MAX_DOWNLOAD_MB` – batas ukuran download (default 50 MB)
 
 ## 🔧 Dependencies
 
@@ -148,6 +146,11 @@ const config: BotConfig = {
 3. **Canvas/Sharp build errors**
    - Pastikan Python dan build tools terinstall
    - Windows: `npm install --global windows-build-tools`
+
+4. **TimeoutError saat konek ke browser / "Only Chrome is supported"**
+   - Install Google Chrome atau Chromium di sistem (misal `sudo pacman -S chromium` di Arch)
+   - Set `PUPPETEER_EXECUTABLE_PATH` (atau `CHROME_PATH`) ke binary tersebut di `.env`
+   - Bot sekarang otomatis mencoba mendeteksi path umum, tetapi variabel env memastikan Puppeteer tidak memakai Chromium bawaan
 
 ### Session Issues
 

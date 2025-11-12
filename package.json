@@ -2,35 +2,19 @@
   "name": "lazbot",
   "version": "1.0.0",
   "description": "LazBot - WhatsApp Bot with Sticker Features",
-  "main": "dist/app/index.js",
+  "type": "module",
+  "main": "src/main.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/app/index.js",
-    "dev": "tsx watch app/index.ts",
-    "clean": "rimraf dist",
-    "setup": "./setup.sh",
-    "lint": "tsc --noEmit",
-    "prestart": "npm run build",
+    "start": "node src/main.js",
+    "dev": "NODE_ENV=development node --watch src/main.js",
+    "lint": "eslint .",
     "pm2:start": "pm2 start ecosystem.config.js",
     "pm2:stop": "pm2 stop ecosystem.config.js",
     "pm2:restart": "pm2 restart ecosystem.config.js",
     "pm2:delete": "pm2 delete ecosystem.config.js",
     "pm2:logs": "pm2 logs lazbot",
-    "pm2:monit": "pm2 monit",
-    "docker:build": "docker build -t lazbot .",
-    "docker:run": "docker run -d --name lazbot -p 3000:3000 lazbot",
-    "docker:stop": "docker stop lazbot && docker rm lazbot",
-    "docker:compose:up": "docker-compose up -d",
-    "docker:compose:down": "docker-compose down",
-    "docker:compose:logs": "docker-compose logs -f"
+    "pm2:monit": "pm2 monit"
   },
-  "keywords": [
-    "whatsapp",
-    "bot",
-    "sticker"
-  ],
-  "author": "LazBot Team",
-  "license": "MIT",
   "dependencies": {
     "@distube/ytdl-core": "^4.16.12",
     "axios": "^1.11.0",
@@ -42,15 +26,15 @@
     "puppeteer": "^24.15.0",
     "qrcode-terminal": "^0.12.0",
     "sharp": "^0.33.5",
-    "whatsapp-web.js": "^1.31.0"
+    "whatsapp-web.js": "^1.31.0",
+    "yt-dlp-wrap": "^2.3.12"
   },
   "devDependencies": {
-    "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.19.9",
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
     "pm2": "^6.0.8",
-    "rimraf": "^5.0.10",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "rimraf": "^5.0.10"
   },
   "engines": {
     "node": ">=18.0.0"

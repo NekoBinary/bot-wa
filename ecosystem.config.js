@@ -2,18 +2,20 @@ module.exports = {
   apps: [
     {
       name: 'lazbot',
-      script: 'dist/app/index.js',
+      script: 'src/main.js',
       instances: 1,
       exec_mode: 'cluster',
       watch: false,
       max_memory_restart: '1G',
       env: {
         NODE_ENV: 'development',
-        PORT: 3000
+        PORT: 3000,
+        PUPPETEER_EXECUTABLE_PATH: '/usr/bin/chromium'
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3000
+        PORT: 3000,
+        PUPPETEER_EXECUTABLE_PATH: '/usr/bin/chromium'
       },
       error_file: './logs/err.log',
       out_file: './logs/out.log',
@@ -28,13 +30,7 @@ module.exports = {
       wait_ready: true,
       listen_timeout: 8000,
       shutdown_with_message: true,
-      // Auto restart if memory usage exceeds 1GB
-      max_memory_restart: '1G',
-      // Graceful shutdown
-      kill_timeout: 5000,
-      // Restart configuration
       autorestart: true,
-      // Environment variables
       env_file: '.env'
     }
   ],
@@ -47,7 +43,7 @@ module.exports = {
       repo: 'git@github.com:username/lazbot.git',
       path: '/var/www/lazbot',
       'pre-deploy-local': '',
-      'post-deploy': 'pnpm install && pnpm run build && pm2 reload ecosystem.config.js --env production',
+      'post-deploy': 'pnpm install && pm2 reload ecosystem.config.js --env production',
       'pre-setup': ''
     }
   }
