@@ -49,7 +49,7 @@ export default class MemeStickerCommand extends Command {
       const stickerBuffer = await stickerService.createMemeSticker(buffer, {
         topText,
         bottomText,
-        fontSize: 150,
+        fontSize: 75,
         fontColor: '#FFFFFF',
         quality: 60
       });

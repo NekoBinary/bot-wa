@@ -49,7 +49,7 @@ export default class StickerService {
     const {
       topText = '',
       bottomText = '',
-      fontSize = 150,
+      fontSize = 75,
       fontColor = '#FFFFFF',
       quality = 50
     } = options;
@@ -62,7 +62,7 @@ export default class StickerService {
         background: { r: 0, g: 0, b: 0, alpha: 0 }
       });
 
-    const effectiveFont = Math.max(fontSize, 135);
+    const effectiveFont = Math.max(fontSize, 60);
 
     if (topText || bottomText) {
       const svg = this.createTextSvg(topText, bottomText, STICKER_SIZE, effectiveFont, fontColor);
@@ -73,7 +73,7 @@ export default class StickerService {
   }
 
   createTextSvg(topText, bottomText, size, fontSize, color) {
-    const strokeWidth = Math.max(14, Math.round(fontSize * 0.26));
+    const strokeWidth = Math.max(7, Math.round(fontSize * 0.26));
     const topY = fontSize + strokeWidth;
     const bottomY = size - strokeWidth;
 
